@@ -1,0 +1,27 @@
+{
+  "name": "medicine-path-monorepo",
+  "private": true,
+  "workspaces": [
+    "app",
+    "sanity"
+  ],
+  "scripts": {
+    "dev:app": "cd app && npm run dev",
+    "dev:sanity": "cd sanity && npm run dev",
+    "dev": "npm run dev:app && npm run dev:sanity",
+    "build:app": "cd app && npm run build",
+    "build:sanity": "cd sanity && npm run build",
+    "build": "npm run build:app && npm run build:sanity",
+    "start:app": "cd app && npm start",
+    "start:sanity": "cd sanity && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  },
+  "resolutions": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@sanity/client": "^6.29.0",
+    "styled-components": "^6.1.15"
+  }
+}

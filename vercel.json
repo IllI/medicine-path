@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/studio/(.*)",
+      "destination": "/sanity/$1"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": "app/.next",
+  "framework": "nextjs"
+} 
