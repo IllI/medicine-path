@@ -1,29 +1,32 @@
 {
   "version": 2,
-  "buildCommand": "node build.js",
-  "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": "app/.next",
-  "framework": "nextjs",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/studio",
-      "destination": "/studio/"
+      "src": "app",
+      "use": "@vercel/next"
     },
     {
-      "source": "/studio/(.*)",
-      "destination": "/sanity/dist/$1"
+      "src": "sanity",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
-  "functions": {
-    "app/api/draft-mode/enable": {
-      "memory": 1024,
-      "maxDuration": 10
+  "routes": [
+    {
+      "src": "/studio",
+      "dest": "/studio/"
     },
-    "app/api/draft-mode/disable": {
-      "memory": 1024,
-      "maxDuration": 10
+    {
+      "src": "/studio/(.*)",
+      "dest": "/sanity/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/app/$1"
     }
-  },
+  ],
   "env": {
     "NEXT_PUBLIC_SANITY_PROJECT_ID": "11w5w28q",
     "NEXT_PUBLIC_SANITY_DATASET": "production",
