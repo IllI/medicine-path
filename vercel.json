@@ -1,14 +1,29 @@
 {
-  "rewrites": [
-    {
-      "source": "/studio/(.*)",
-      "destination": "/sanity/$1"
-    }
-  ],
-  "buildCommand": "npm run build:app",
+  "version": 2,
+  "buildCommand": "npm run build:app && cd sanity && npm install && npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "app/.next",
   "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/studio",
+      "destination": "/studio/"
+    },
+    {
+      "source": "/studio/(.*)",
+      "destination": "/sanity/dist/$1"
+    }
+  ],
+  "functions": {
+    "app/api/draft-mode/enable": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "app/api/draft-mode/disable": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "env": {
     "NEXT_PUBLIC_SANITY_PROJECT_ID": "11w5w28q",
     "NEXT_PUBLIC_SANITY_DATASET": "production",

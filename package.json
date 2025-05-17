@@ -13,7 +13,9 @@
     "build:sanity": "cd sanity && npm run build",
     "build": "npm run build:app && npm run build:sanity",
     "start:app": "cd app && npm start",
-    "start:sanity": "cd sanity && npm start"
+    "start:sanity": "cd sanity && npm start",
+    "start": "npm run start:app",
+    "vercel-build": "npm run build:app && cd sanity && npm install && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.0.0"
