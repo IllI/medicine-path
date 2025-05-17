@@ -1,30 +1,16 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "app",
-      "use": "@vercel/next"
+  "buildCommand": "node build-windows.js",
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "nextjs",
+  "outputDirectory": "app/.next",
+  "rewrites": [
+    { 
+      "source": "/studio", 
+      "destination": "/studio/" 
     },
-    {
-      "src": "sanity",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/studio",
-      "dest": "/studio/"
-    },
-    {
-      "src": "/studio/(.*)",
-      "dest": "/sanity/dist/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/app/$1"
+    { 
+      "source": "/studio/(.*)", 
+      "destination": "/studio/$1" 
     }
   ],
   "env": {

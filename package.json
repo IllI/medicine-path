@@ -15,7 +15,7 @@
     "start:app": "cd app && npm start",
     "start:sanity": "cd sanity && npm start",
     "start": "npm run start:app",
-    "vercel-build": "npm run build:app && cd sanity && npm install && npm run build"
+    "vercel-build": "npm run build:app && (cd sanity && npm install && npm run build) && mkdir -p app/public/studio && cp -r sanity/dist/* app/public/studio/"
   },
   "devDependencies": {
     "concurrently": "^8.0.0"
