@@ -1,18 +1,8 @@
 {
-  "buildCommand": "node build-windows.js",
+  "buildCommand": "cd app && npm install --legacy-peer-deps && npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "outputDirectory": "app/.next",
-  "rewrites": [
-    { 
-      "source": "/studio", 
-      "destination": "/studio/" 
-    },
-    { 
-      "source": "/studio/(.*)", 
-      "destination": "/studio/$1" 
-    }
-  ],
   "env": {
     "NEXT_PUBLIC_SANITY_PROJECT_ID": "11w5w28q",
     "NEXT_PUBLIC_SANITY_DATASET": "production",
