@@ -5,7 +5,7 @@
       "destination": "/sanity/$1"
     }
   ],
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:app",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "app/.next",
   "framework": "nextjs"
