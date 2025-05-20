@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sanity Iframe Refresher</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+    }
+    .bookmarklet {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #2276fc;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .instructions {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    code {
+      font-family: monospace;
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sanity Iframe Refresher Bookmarklet</h1>
+  
+  <p>This page provides a simple bookmarklet that refreshes the preview iframe in Sanity Studio's presentation tool when live updates aren't working.</p>
+  
+  <h2>How to use:</h2>
+  <div class="instructions">
+    <p><strong>Step 1:</strong> Drag this link to your bookmarks bar:</p>
+    <p><a id="refresher" class="bookmarklet" href="#">Refresh Sanity Preview</a></p>
+    
+    <p><strong>Step 2:</strong> When editing in Sanity Studio, click the bookmarklet to force a refresh of the preview.</p>
+  </div>
+  
+  <h2>Troubleshooting:</h2>
+  <ul>
+    <li>This bookmarklet must be used while you're viewing the presentation tool in Sanity Studio.</li>
+    <li>If it doesn't work, check the browser console for errors (F12).</li>
+    <li>Make sure your browser allows JavaScript in bookmarklets.</li>
+  </ul>
+  
+  <script>
+    // Create the bookmarklet code
+    const bookmarkletCode = `
+      (function() {
+        // Find the iframe
+        const iframe = document.querySelector('iframe');
+        if (!iframe) {
+          alert('No preview iframe found!');
+          return;
+        }
+        
+        try {
+          // Add cache-busting parameters
+          const url = new URL(iframe.src);
+          url.searchParams.set('refresh', Date.now());
+          url.searchParams.set('ts', Date.now());
+          
+          // Update the iframe source
+          iframe.src = url.toString();
+          
+          // Create or update indicator
+          let indicator = document.getElementById('sanity-refresh-indicator');
+          if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'sanity-refresh-indicator';
+            indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:rgba(0,128,0,0.7);color:white;padding:5px 10px;border-radius:4px;z-index:9999;font-size:12px;';
+            document.body.appendChild(indicator);
+          }
+          
+          // Update indicator text
+          indicator.textContent = 'Preview refreshed: ' + new Date().toLocaleTimeString();
+          
+          // Hide indicator after 3 seconds
+          setTimeout(() => {
+            indicator.style.display = 'none';
+          }, 3000);
+          
+          console.log('Preview iframe refreshed');
+        } catch (e) {
+          alert('Error refreshing preview: ' + e.message);
+        }
+      })();
+    `;
+    
+    // Create the bookmarklet URL
+    const bookmarkletUrl = `javascript:${encodeURIComponent(bookmarkletCode.replace(/\s+/g, ' '))}`;
+    
+    // Set the bookmarklet HREF
+    document.getElementById('refresher').href = bookmarkletUrl;
+  </script>
+</body>
+</html> 

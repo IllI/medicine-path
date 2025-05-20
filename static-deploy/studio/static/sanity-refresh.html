@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sanity Preview Refresher</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
+    button {
+      background: #2276fc;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #1a65e0;
+    }
+    .code {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 20px 0;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sanity Preview Refresher</h1>
+    <p>Use this tool to force refresh the preview iframe in Sanity Studio when live updates aren't working properly.</p>
+    
+    <button id="refresh-once">Refresh Once</button>
+    <button id="refresh-loop">Auto-Refresh (5s)</button>
+    <button id="stop-refresh" disabled>Stop Auto-Refresh</button>
+    <button id="create-bookmarklet">Create Bookmarklet</button>
+    
+    <div id="status"></div>
+    
+    <div id="bookmarklet-container" style="display: none;">
+      <h3>Bookmarklet</h3>
+      <p>Drag this link to your bookmarks bar to create a one-click refresh button for any Sanity Studio:</p>
+      <p><a id="bookmarklet" href="#">Refresh Sanity Preview</a></p>
+      
+      <h3>Manual Steps</h3>
+      <p>Or copy this code and create a new bookmark with this as the URL:</p>
+      <div class="code" id="bookmarklet-code"></div>
+    </div>
+  </div>
+
+  <script>
+    // Status update function
+    function updateStatus(message, isError = false) {
+      const statusEl = document.getElementById('status');
+      statusEl.innerHTML = `<p class="${isError ? 'error' : 'success'}">${message}</p>`;
+    }
+    
+    // Function to find and refresh the iframe
+    function refreshSanityPreview() {
+      try {
+        // Find the parent window if we're in an iframe
+        const targetWindow = window.parent || window;
+        
+        // Find all iframes in the parent document
+        const iframes = targetWindow.document.querySelectorAll('iframe');
+        let refreshed = false;
+        
+        iframes.forEach(iframe => {
+          try {
+            if (iframe.src.includes('preview=true') || 
+                iframe.src.includes('sanity-preview') || 
+                iframe.src.includes('draft-mode')) {
+              
+              // Add cache-busting parameters
+              const url = new URL(iframe.src);
+              url.searchParams.set('refresh', Date.now());
+              url.searchParams.set('ts', Date.now());
+              url.searchParams.set('r', Math.random().toString(36).substring(2, 15));
+              
+              // Update the iframe src
+              iframe.src = url.toString();
+              refreshed = true;
+              
+              updateStatus(`Refreshed iframe at ${new Date().toLocaleTimeString()}`);
+            }
+          } catch (e) {
+            console.error('Error refreshing iframe:', e);
+          }
+        });
+        
+        if (!refreshed) {
+          updateStatus('No suitable preview iframe found. Are you in Sanity Studio?', true);
+        }
+        
+        return refreshed;
+      } catch (e) {
+        updateStatus(`Error: ${e.message}`, true);
+        return false;
+      }
+    }
+    
+    // Refresh once button
+    document.getElementById('refresh-once').addEventListener('click', refreshSanityPreview);
+    
+    // Auto-refresh functionality
+    let refreshInterval;
+    
+    document.getElementById('refresh-loop').addEventListener('click', () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+      
+      refreshSanityPreview();
+      refreshInterval = setInterval(refreshSanityPreview, 5000);
+      
+      document.getElementById('refresh-loop').disabled = true;
+      document.getElementById('stop-refresh').disabled = false;
+      
+      updateStatus('Auto-refresh enabled - refreshing every 5 seconds');
+    });
+    
+    document.getElementById('stop-refresh').addEventListener('click', () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+      
+      document.getElementById('refresh-loop').disabled = false;
+      document.getElementById('stop-refresh').disabled = true;
+      
+      updateStatus('Auto-refresh stopped');
+    });
+    
+    // Create bookmarklet
+    document.getElementById('create-bookmarklet').addEventListener('click', () => {
+      const bookmarkletContainer = document.getElementById('bookmarklet-container');
+      bookmarkletContainer.style.display = 'block';
+      
+      // Create the bookmarklet code
+      const refreshCode = `
+        (function() {
+          try {
+            // Find all iframes
+            const iframes = document.querySelectorAll('iframe');
+            let refreshed = false;
+            
+            iframes.forEach(iframe => {
+              try {
+                if (iframe.src.includes('preview=true') || 
+                    iframe.src.includes('sanity-preview') || 
+                    iframe.src.includes('draft-mode')) {
+                  
+                  // Add cache-busting parameters
+                  const url = new URL(iframe.src);
+                  url.searchParams.set('refresh', Date.now());
+                  url.searchParams.set('ts', Date.now());
+                  url.searchParams.set('r', Math.random().toString(36).substring(2, 15));
+                  
+                  // Update the iframe src
+                  iframe.src = url.toString();
+                  refreshed = true;
+                  
+                  // Try to reload the iframe content window
+                  try {
+                    if (iframe.contentWindow) {
+                      iframe.contentWindow.location.reload();
+                    }
+                  } catch (e) {}
+                  
+                  alert('Sanity preview refreshed!');
+                }
+              } catch (e) {}
+            });
+            
+            if (!refreshed) {
+              alert('No Sanity preview iframe found. Are you in Studio?');
+            }
+          } catch (e) {
+            alert('Error refreshing Sanity preview: ' + e.message);
+          }
+        })();
+      `.trim().replace(/\s+/g, ' ');
+      
+      // Create the bookmarklet URL
+      const bookmarkletUrl = `javascript:${encodeURIComponent(refreshCode)}`;
+      
+      // Update the bookmarklet link
+      const bookmarkletLink = document.getElementById('bookmarklet');
+      bookmarkletLink.href = bookmarkletUrl;
+      
+      // Update the code display
+      const bookmarkletCode = document.getElementById('bookmarklet-code');
+      bookmarkletCode.textContent = bookmarkletUrl;
+    });
+    
+    // Initial status
+    updateStatus('Ready to refresh Sanity preview iframe');
+  </script>
+</body>
+</html> 

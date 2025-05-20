@@ -1,11 +1,11 @@
 {
-  "buildCommand": "cd app && npm install --legacy-peer-deps && npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "outputDirectory": "app/.next",
-  "env": {
-    "NEXT_PUBLIC_SANITY_PROJECT_ID": "11w5w28q",
-    "NEXT_PUBLIC_SANITY_DATASET": "production",
-    "NEXT_PUBLIC_SANITY_API_VERSION": "2023-05-03"
-  }
+  "framework": "nextjs",
+  "rewrites": [
+    { "source": "/studio", "destination": "/studio/" },
+    { "source": "/studio/(.*)", "destination": "/studio/$1" }
+  ],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./app ./sanity || exit 1"
 } 

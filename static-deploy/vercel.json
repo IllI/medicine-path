@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": false,
+  "framework": null,
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/studio", "destination": "/studio/" },
+    { "source": "/studio/(.*)", "destination": "/studio/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+} 

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medicine Path</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f7f6;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #6a8977;
+    }
+    p {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .button {
+      display: inline-block;
+      background: #6a8977;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+    .studio-link {
+      display: block;
+      margin-top: 2rem;
+      color: #6a8977;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .studio-link:hover {
+      text-decoration: underline;
+    }
+    .content-section {
+      margin-top: 2rem;
+      text-align: left;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 2rem;
+    }
+    .loading {
+      font-style: italic;
+      color: #666;
+    }
+    .section-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    .section-item:last-child {
+      border-bottom: none;
+    }
+    .debug-info {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-family: monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      display: none;
+    }
+  </style>
+  <script>
+    // If we got a 404 error and we're not at the root, redirect to the root
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+      window.location.href = '/';
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>This Medicine Path</h1>
+    <p>Welcome to Medicine Path - a place of healing and transformation.</p>
+    <p>Our website is currently being updated with a new design. Please check back soon for our full site experience.</p>
+    
+    <a href="/studio/" class="studio-link">Access Sanity Studio →</a>
+
+    <div id="content" class="content-section">
+      <p class="loading">Loading content from Sanity...</p>
+    </div>
+    
+    <div id="debug" class="debug-info"></div>
+  </div>
+
+  <script>
+    // Since we're having issues with the Sanity client library in the browser,
+    // let's fetch data directly using the Sanity REST API
+    document.addEventListener('DOMContentLoaded', function() {
+      // Debug mode - set to true to see detailed data in the UI
+      const DEBUG_MODE = true;
+      
+      // Sanity project config
+      const projectId = '11w5w28q';
+      const dataset = 'production';
+      const apiVersion = '2023-05-03';
+      
+      // Build the GROQ query - simplified query to just get any content
+      const query = `*[_type == "homepage"][0]`;
+      
+      // Encode the query for the URL
+      const encodedQuery = encodeURIComponent(query);
+      
+      // Build the API URL
+      const url = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${encodedQuery}`;
+      
+      // Debug element
+      const debugEl = document.getElementById('debug');
+      if (DEBUG_MODE) {
+        debugEl.style.display = 'block';
+      }
+      
+      // Fetch data from Sanity
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Sanity data:', data);
+          
+          // Add debug info
+          if (DEBUG_MODE) {
+            debugEl.textContent = 'Sanity API Response:\n' + JSON.stringify(data, null, 2);
+          }
+          
+          const contentEl = document.getElementById('content');
+          
+          // Check if we have data
+          if (data && data.result) {
+            // Display the structure of the data for debugging
+            contentEl.innerHTML = '<h2>Content from Sanity CMS</h2>';
+            
+            // Create a function to render any object as HTML
+            function renderObject(obj, parent) {
+              if (!obj) return;
+              
+              // Handle different types of data
+              if (typeof obj === 'string') {
+                const p = document.createElement('p');
+                p.textContent = obj;
+                parent.appendChild(p);
+              } 
+              else if (Array.isArray(obj)) {
+                // If it's an array, render each item
+                obj.forEach(item => {
+                  const div = document.createElement('div');
+                  div.className = 'section-item';
+                  parent.appendChild(div);
+                  renderObject(item, div);
+                });
+              }
+              else if (typeof obj === 'object') {
+                // If it has title/heading, display that first
+                if (obj.title || obj.heading) {
+                  const heading = document.createElement('h3');
+                  heading.textContent = obj.title || obj.heading;
+                  parent.appendChild(heading);
+                }
+                
+                // If it has subtitle/subheading/message, display that next
+                if (obj.subtitle || obj.subheading || obj.message) {
+                  const subheading = document.createElement('h4');
+                  subheading.textContent = obj.subtitle || obj.subheading || obj.message;
+                  parent.appendChild(subheading);
+                }
+                
+                // Handle sections array if it exists
+                if (obj.sections && Array.isArray(obj.sections)) {
+                  const sectionsContainer = document.createElement('div');
+                  sectionsContainer.className = 'sections-container';
+                  parent.appendChild(sectionsContainer);
+                  
+                  obj.sections.forEach(section => {
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'section-item';
+                    sectionsContainer.appendChild(sectionDiv);
+                    renderObject(section, sectionDiv);
+                  });
+                }
+                
+                // Handle text field if it exists and is an array (portable text)
+                if (obj.text && Array.isArray(obj.text)) {
+                  const textDiv = document.createElement('div');
+                  textDiv.className = 'portable-text';
+                  parent.appendChild(textDiv);
+                  
+                  obj.text.forEach(block => {
+                    if (block._type === 'block' && block.children) {
+                      const p = document.createElement('p');
+                      p.textContent = block.children.map(child => child.text).join('');
+                      textDiv.appendChild(p);
+                    }
+                  });
+                }
+              }
+            }
+            
+            // Render the main data
+            renderObject(data.result, contentEl);
+          } else {
+            contentEl.innerHTML = '<p>No content found. Please visit the Sanity Studio to add content.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching content from Sanity:', error);
+          document.getElementById('content').innerHTML = 
+            '<p>Could not load content from Sanity CMS. ' + 
+            'Please check if CORS is properly configured and visit the Sanity Studio to configure your content.</p>';
+            
+          if (DEBUG_MODE) {
+            debugEl.style.display = 'block';
+            debugEl.textContent = 'Error: ' + error.message;
+          }
+        });
+    });
+  </script>
+</body>
+</html> 

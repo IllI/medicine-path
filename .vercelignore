@@ -1,0 +1,8 @@
+.next
+.git
+node_modules
+README.md
+app/
+sanity/
+package.json
+package-lock.json 

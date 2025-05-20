@@ -1,29 +1,27 @@
 {
-  "name": "medicine-path-monorepo",
+  "name": "medicinepath-static",
+  "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "vercel-build": "npm run build",
+    "build": "npm run build:sanity && npm run build:app && npm run copy-studio",
+    "build:app": "cd app && npm install --legacy-peer-deps && npm run build",
+    "build:sanity": "cd sanity && npm install --legacy-peer-deps && npm run build",
+    "copy-studio": "powershell -File ./copy-studio.ps1",
+    "copy-studio:unix": "bash ./copy-studio.sh",
+    "dev": "concurrently \"npm run dev:app\" \"npm run dev:sanity\"",
+    "dev:app": "cd app && npm run dev",
+    "dev:sanity": "cd sanity && npm run dev"
+  },
   "workspaces": [
     "app",
     "sanity"
   ],
-  "scripts": {
-    "dev:app": "cd app && npm run dev",
-    "dev:sanity": "cd sanity && npm run dev",
-    "dev": "npm run dev:app && npm run dev:sanity",
-    "build:app": "cd app && npm run build",
-    "build:sanity": "cd sanity && npm run build",
-    "build": "npm run build:app && npm run build:sanity",
-    "start:app": "cd app && npm start",
-    "start:sanity": "cd sanity && npm start",
-    "start": "npm run start:app",
-    "vercel-build": "npm run build:app && (cd sanity && npm install && npm run build) && mkdir -p app/public/studio && cp -r sanity/dist/* app/public/studio/"
+  "resolutions": {
+    "date-fns": "2.30.0",
+    "date-fns-tz": "2.0.0"
   },
   "devDependencies": {
-    "concurrently": "^8.0.0"
-  },
-  "resolutions": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@sanity/client": "^6.29.0",
-    "styled-components": "^6.1.15"
+    "concurrently": "^8.2.2"
   }
 }

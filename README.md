@@ -55,15 +55,20 @@ The project is configured for deployment on Vercel.
    - Create a new project in Vercel and connect to your GitHub repository
 
 2. **Configure Project Settings**
-   - Framework preset: Next.js
+   - Install the Sanity integration in your Vercel project
+   - Framework preset: Next.js 
    - Root directory: `./` (root of repository)
-   - Build command: `npm run build` (already set in vercel.json)
-   - Output directory: `app/.next` (already set in vercel.json)
-   - Install command: `npm install --legacy-peer-deps` (already set in vercel.json)
+   - Output directory: `app/.next` (automatically set in vercel.json)
+   - Build command: `npm run build` (automatically set in vercel.json)
+   - Install command: `npm install` (automatically set in vercel.json)
 
 3. **Environment Variables**
-   - Add all required environment variables in Vercel project settings
-   - See `ENVIRONMENT_VARIABLES.md` for the complete list of required variables
+   - Required variables will be pulled from Sanity integration automatically
+   - Manually add any additional variables:
+     - `NEXT_PUBLIC_SANITY_PROJECT_ID`: Your Sanity project ID
+     - `NEXT_PUBLIC_SANITY_DATASET`: Your Sanity dataset name
+     - `NEXT_PUBLIC_SANITY_API_VERSION`: Sanity API version (e.g., "2023-05-03")
+     - `SANITY_API_WRITE_TOKEN`: Token for write operations
 
 4. **Deploy**
    - Click "Deploy" to start the deployment process
@@ -76,12 +81,11 @@ The project is configured for deployment on Vercel.
 
 ### Troubleshooting Deployment
 
-If you encounter issues during deployment:
-
+If you encounter dependency conflicts during deployment:
 1. Check the build logs in Vercel for specific errors
 2. Ensure all environment variables are correctly set
-3. Verify that the monorepo structure is maintained as expected
-4. Make sure `vercel.json` contains the correct configuration
+3. Verify resolutions in the root package.json match your dependency needs
+4. Try setting `legacy-peer-deps=true` in your .npmrc file if needed
 
 ## Current Status
 
