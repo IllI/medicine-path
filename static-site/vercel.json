@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "buildCommand": "",
-  "outputDirectory": ".",
+  "buildCommand": null,
+  "installCommand": null,
+  "framework": null,
   "rewrites": [
     { "source": "/studio", "destination": "/studio/" },
     { "source": "/studio/(.*)", "destination": "/studio/$1" },
